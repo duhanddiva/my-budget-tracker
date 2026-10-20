@@ -1,10 +1,8 @@
 
-
 from auth_utils import load_users, verify_password
 
 try:
-    import importlib
-    st = importlib.import_module("streamlit")
+    import streamlit as st
     import matplotlib.pyplot as plt
     import pandas as pd
 except ImportError as e:
