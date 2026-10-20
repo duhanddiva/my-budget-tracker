@@ -120,6 +120,54 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Initialize user and authentication database in session state
+if 'user_db' not in st.session_state:
+    st.session_state['user_db'] = {"user": "password"}  # Pre-registered default user
+
+if 'logged_in_user' not in st.session_state:
+    st.session_state['logged_in_user'] = None
+
+st.title("💰 My Easy Budget Tracker")
+
+# Authentication Screen
+if st.session_state['logged_in_user'] is None:
+    st.header("🔑 Sign In or Sign Up")
+    st.write("Please sign in to access your budget helper, or sign up if you do not have an account.")
+    
+    auth_mode = st.radio("Choose Action:", ["Sign In", "Sign Up"], horizontal=True)
+    
+    username = st.text_input("Username:", value="")
+    password = st.text_input("Password:", value="", type="password")
+    
+    if auth_mode == "Sign In":
+        if st.button("Sign In"):
+            if username in st.session_state['user_db'] and st.session_state['user_db'][username] == password:
+                st.session_state['logged_in_user'] = username
+                st.success(f"Welcome back, {username}! Logging in...")
+                st.rerun()
+            else:
+                st.error("❌ Incorrect Username or Password. Please try again!")
+    else:
+        if st.button("Create Account"):
+            if not username or not password:
+                st.error("❌ Username and Password cannot be empty!")
+            elif username in st.session_state['user_db']:
+                st.error("❌ This username is already taken. Please choose another one.")
+            else:
+                st.session_state['user_db'][username] = password
+                st.success("✅ Account successfully created! You can now switch to 'Sign In'.")
+
+else:
+    # Logged In App Interface
+    st.sidebar.markdown(f"👤 **Logged in as:** {st.session_state['logged_in_user']}")
+    if st.sidebar.button("Log Out"):
+        st.session_state['logged_in_user'] = None
+        st.rerun()
+
+    st.write(f"Welcome, {st.session_state['logged_in_user']}! This app helps you manage your money easily. You can set your starting balance and track your monthly income below.")
+
+    st.markdown("---")
+
 st.title("💰 My Easy Budget Tracker")
 st.write("Welcome! This app helps you manage your money easily. You can set your starting balance and track your monthly income below.")
 
