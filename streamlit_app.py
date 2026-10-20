@@ -1,6 +1,4 @@
 
-from auth_utils import load_users, verify_password
-
 try:
     import streamlit as st
     import matplotlib.pyplot as plt
@@ -120,43 +118,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-if 'logged_in_user' not in st.session_state:
-    st.session_state['logged_in_user'] = None
-
 st.title("💰 My Easy Budget Tracker")
-
-# Authentication Screen
-if st.session_state['logged_in_user'] is None:
-    st.header("Welcome to your budget helper")
-    st.write("Sign in with an account authorized by the app administrator.")
-
-    username = st.text_input("Username:", value="")
-    password = st.text_input("Password:", value="", type="password")
-
-    if st.button("Sign In"):
-        try:
-            users = load_users()
-        except (OSError, ValueError) as error:
-            st.error(f"Could not load authorized users: {error}")
-            st.stop()
-        if username in users and verify_password(password, users[username]):
-            st.session_state['logged_in_user'] = username
-            st.success(f"Welcome back, {username}! Logging in...")
-            st.rerun()
-        else:
-            st.error("❌ Incorrect Username or Password. Please try again!")
-    st.stop()
-
-else:
-    # Logged In App Interface
-    st.sidebar.markdown(f"👤 **Logged in as:** {st.session_state['logged_in_user']}")
-    if st.sidebar.button("Log Out"):
-        st.session_state['logged_in_user'] = None
-        st.rerun()
-
-    st.write(f"Welcome, {st.session_state['logged_in_user']}! This app helps you manage your money easily. You can set your starting balance and track your monthly income below.")
-
-    st.markdown("---")
+st.header("Welcome to your budget helper")
+st.write("This app helps you manage your money easily. Set your starting balance and track your monthly income below.")
+st.markdown("---")
 
 # Balance and Income Input Section
 st.header("1. Your Bank Account Setup")

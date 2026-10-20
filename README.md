@@ -24,28 +24,8 @@ $ curl -LsSf https://astral.sh/uv/install.sh | sh
    $ uv run streamlit run streamlit_app.py
    ```
 
-### Managing authorized users
+### Authentication
 
-Add an authorized account from the project directory:
-
-```
-$ uv run python manage_users.py alice
-```
-
-Reset an existing account's password:
-
-```
-$ uv run python manage_users.py alice --update
-```
-
-Change both the username and password:
-
-```
-$ uv run python manage_users.py alice --update --new-username alice2
-```
-
-The command prompts for a password and confirmation, then stores a salted
-password hash in `users.json`. The file is local and ignored by Git; create
-accounts on the machine where the app runs. Do not store plain-text passwords
-in the file or commit it. This local file-based setup is intended for a
-single-host app, not production or multi-instance authentication.
+Authentication is currently disabled. The app opens directly without a
+username or password. Do not use it to host private financial information on a
+public or shared network while authentication is disabled.
