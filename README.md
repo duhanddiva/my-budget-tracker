@@ -23,3 +23,17 @@ $ curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
    $ uv run streamlit run streamlit_app.py
    ```
+
+### Managing authorized users
+
+Add an authorized account from the project directory:
+
+```
+$ uv run python manage_users.py alice
+```
+
+The command prompts for a password and confirmation, then stores a salted
+password hash in `users.json`. The file is local and ignored by Git; create
+accounts on the machine where the app runs. Do not store plain-text passwords
+in the file or commit it. This local file-based setup is intended for a
+single-host app, not production or multi-instance authentication.

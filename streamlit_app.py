@@ -1,5 +1,7 @@
 
 
+from auth_utils import load_users, verify_password
+
 try:
     import importlib
     st = importlib.import_module("streamlit")
@@ -120,10 +122,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize user and authentication database in session state
-if 'user_db' not in st.session_state:
-    st.session_state['user_db'] = {"user": "password"}  # Pre-registered default user
-
 if 'logged_in_user' not in st.session_state:
     st.session_state['logged_in_user'] = None
 
@@ -131,31 +129,25 @@ st.title("💰 My Easy Budget Tracker")
 
 # Authentication Screen
 if st.session_state['logged_in_user'] is None:
-    st.header("🔑 Sign In or Sign Up")
-    st.write("Please sign in to access your budget helper, or sign up if you do not have an account.")
-    
-    auth_mode = st.radio("Choose Action:", ["Sign In", "Sign Up"], horizontal=True)
-    
+    st.header("Welcome to your budget helper")
+    st.write("Sign in with an account authorized by the app administrator.")
+
     username = st.text_input("Username:", value="")
     password = st.text_input("Password:", value="", type="password")
-    
-    if auth_mode == "Sign In":
-        if st.button("Sign In"):
-            if username in st.session_state['user_db'] and st.session_state['user_db'][username] == password:
-                st.session_state['logged_in_user'] = username
-                st.success(f"Welcome back, {username}! Logging in...")
-                st.rerun()
-            else:
-                st.error("❌ Incorrect Username or Password. Please try again!")
-    else:
-        if st.button("Create Account"):
-            if not username or not password:
-                st.error("❌ Username and Password cannot be empty!")
-            elif username in st.session_state['user_db']:
-                st.error("❌ This username is already taken. Please choose another one.")
-            else:
-                st.session_state['user_db'][username] = password
-                st.success("✅ Account successfully created! You can now switch to 'Sign In'.")
+
+    if st.button("Sign In"):
+        try:
+            users = load_users()
+        except (OSError, ValueError) as error:
+            st.error(f"Could not load authorized users: {error}")
+            st.stop()
+        if username in users and verify_password(password, users[username]):
+            st.session_state['logged_in_user'] = username
+            st.success(f"Welcome back, {username}! Logging in...")
+            st.rerun()
+        else:
+            st.error("❌ Incorrect Username or Password. Please try again!")
+    st.stop()
 
 else:
     # Logged In App Interface
@@ -167,11 +159,6 @@ else:
     st.write(f"Welcome, {st.session_state['logged_in_user']}! This app helps you manage your money easily. You can set your starting balance and track your monthly income below.")
 
     st.markdown("---")
-
-st.title("💰 My Easy Budget Tracker")
-st.write("Welcome! This app helps you manage your money easily. You can set your starting balance and track your monthly income below.")
-
-st.markdown("---")
 
 # Balance and Income Input Section
 st.header("1. Your Bank Account Setup")
